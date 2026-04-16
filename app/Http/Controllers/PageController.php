@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
-public function index()
+    public function index()
     {
-        $page = Page::all(); // Ambil semua data page
+        $page = Page::all();
+
         return view('backend.content.page.index', compact('page'));
     }
 
@@ -20,41 +21,70 @@ public function index()
 
     public function prosesTambah(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'judul_page' => 'required',
             'isi_page' => 'required',
+            'status_page' => 'required',
         ]);
-
-        $page = new Page();
+        $page = new Page;
         $page->judul_page = $request->judul_page;
         $page->isi_page = $request->isi_page;
-        $page->status_page = 1; // Default aktif
-        $page->save();
+        $page->status_page = 1;
 
-        return redirect()->route('page.index')->with('pesan', ['success', 'Berhasil tambah page']);
+        try {
+            $page->save();
+
+            return redirect(route('page.index'))->with('pesan', ['success', 'Page berhasil ditambahkan']);
+        } catch (\Exception $e) {
+            return redirect(route('page.index'))->with('pesan', ['danger', 'Page gagal ditambahkan']);
+        }
     }
 
-    public function ubah($id)
+    public function ubah($id_page)
     {
-        $page = Page::findOrFail($id);
+        $page = Page::findOrFail($id_page);
+
         return view('backend.content.page.ubah', compact('page'));
     }
 
     public function prosesUbah(Request $request)
     {
+        $validated = $request->validate([
+            'id_page' => 'required',
+            'judul_page' => 'required',
+            'isi_page' => 'required',
+            'status_page' => 'required',
+        ]);
+
         $page = Page::findOrFail($request->id_page);
         $page->judul_page = $request->judul_page;
         $page->isi_page = $request->isi_page;
         $page->status_page = $request->status_page;
-        $page->save();
 
-        return redirect()->route('page.index')->with('pesan', ['success', 'Berhasil ubah page']);
+        try {
+            $page->save();
+
+            return redirect(route('page.index'))->with('pesan', ['success', 'Page berhasil diubah']);
+        } catch (\Exception $e) {
+            return redirect(route('page.index'))->with('pesan', ['danger', 'Page gagal diubah']);
+        }
     }
 
-    public function hapus($id)
+    public function hapus($id_page)
     {
-        $page = Page::findOrFail($id);
-        $page->delete();
-        return redirect()->route('page.index')->with('pesan', ['success', 'Berhasil hapus page']);
+        $page = Page::findOrFail($id_page);
+
+        try {
+            $page->delete();
+
+            return redirect(route('page.index'))->with('pesan', ['success', 'Page berhasil di hapus']);
+        } catch (\Exception $e) {
+            return redirect(route('page.index'))->with('pesan', ['danger', 'Page gagal dihapus']);
+        }
     }
+    // public function exportPdf(){
+    //     $page = Page::all();
+    //     $pdf = PDF::loadView('backend.content.page.exportPdf', compact('page'));
+    //     return $pdf->download('page.pdf');
+    // }
 }

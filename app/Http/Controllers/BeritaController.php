@@ -2,112 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategori;
 use App\Models\Berita;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 
 class BeritaController extends Controller
 {
-    public function index()
-    {
+    public function index(){
         $berita = Berita::with('kategori')->get();
-        return view('backend.content.berita.list', compact('berita'));
+        return view('backend.content.berita.list',compact('berita'));
     }
 
-    public function tambah()
-    {
+    public function tambah(){
         $kategori = Kategori::all();
-        return view('backend.content.berita.formTambah', compact('kategori'));
+        return view('backend.content.berita.formTambah',compact('kategori'));
     }
 
-    public function prosesTambah(Request $request)
-    {
+    public function prosesTambah(Request $request){
         $request->validate([
-            'judul_berita'  => 'required|string|max:255',
-            'isi_berita'    => 'required',
-            'id_kategori'   => 'required',
-            'gambar_berita' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'judul_berita' => 'required',
+            'isi_berita' => 'required',
+            'id_kategori' => 'required',
+            'gambar_berita' => 'required',
         ]);
 
+        $request->file('gambar_berita')->store('berita','public');
+        $gambar_berita = $request->file('gambar_berita')->hashName();
+
+        $berita = new Berita();
+        $berita->judul_berita = $request->judul_berita;
+        $berita->isi_berita = $request->isi_berita;
+        $berita->id_kategori = $request->id_kategori;
+        $berita->gambar_berita =$gambar_berita;
+
         try {
-            $gambar_berita = $request->file('gambar_berita')
-                ->store('berita', 'public');
-
-            Berita::create([
-                'judul_berita'  => $request->judul_berita,
-                'isi_berita'    => $request->isi_berita,
-                'id_kategori'   => $request->id_kategori,
-                'gambar_berita' => $gambar_berita
-            ]);
-
-            return redirect()->route('berita.index')
-                ->with('pesan', ['success', 'Berhasil tambah berita']);
-
-        } catch (\Exception $e) {
-            return redirect()->route('berita.index')
-                ->with('pesan', ['danger', 'Gagal tambah berita : ' . $e->getMessage()]);
+            $berita->save();
+            return redirect(route('berita.index'))->with('pesan',['success','berita berhasil ditambahkan']);
+        }catch (\Exception $e){
+            return redirect(route('berita.index'))->with('pesan',['danger','berita gagal ditambahkan']);
         }
     }
 
     public function ubah($id){
         $berita = Berita::findOrFail($id);
         $kategori = Kategori::all();
-        return view('backend.content.berita.formUbah', compact('berita', 'kategori'));
+        return view('backend.content.berita.formUbah',compact('berita','kategori'));
     }
 
-    public function prosesUbah(Request $request)
-    {
+    public function prosesUbah(Request $request){
         $request->validate([
-            'judul_berita'  => 'required|string|max:255',
-            'isi_berita'    => 'required',
-            'id_kategori'   => 'required',
-            'gambar_berita' => 'image|mimes:jpg,jpeg,png|max:2048'
+            'judul_berita' => 'required',
+            'isi_berita' => 'required',
+            'id_kategori' => 'required',
         ]);
+        $berita = Berita::findOrFail($request->id_berita);
+        $berita->judul_berita = $request->judul_berita;
+        $berita->isi_berita = $request->isi_berita;
+        $berita->id_kategori = $request->id_kategori;
+
+        if($request->file('gambar_berita')){
+            $request->file('gambar_berita')->store('berita','public');
+            $gambar_berita = $request->file('gambar_berita')->hashName();
+            $berita->gambar_berita = $gambar_berita;
+        }
 
         try {
-
-            $berita = Berita::findOrFail($request->id_berita);
-
-            if($request->hasFile('gambar_berita')){
-                $gambar_berita = $request->file('gambar_berita')
-                    ->store('berita', 'public');
-            }else{
-                $gambar_berita = $berita->gambar_berita;
-            }
-
-            $berita->update([
-                'judul_berita'  => $request->judul_berita,
-                'isi_berita'    => $request->isi_berita,
-                'id_kategori'   => $request->id_kategori,
-                'gambar_berita' => $gambar_berita
-            ]);
-
-            return redirect()->route('berita.index')
-                ->with('pesan', ['success', 'Berhasil ubah berita']);
-
-        } catch (\Exception $e) {
-
-            return redirect()->route('berita.index')
-                ->with('pesan', ['danger', 'Gagal ubah berita : '.$e->getMessage()]);
+            $berita->save();
+            return redirect(route('berita.index'))->with('pesan',['success','berita berhasil ubah']);
+        }catch (\Exception $e){
+            return redirect(route('berita.index'))->with('pesan',['danger','berita gagal ubah']);
         }
     }
 
-    public function hapus($id)
-    {
+    public function hapus($id){
         $berita = Berita::findOrFail($id);
 
         try {
-            // Hapus file gambar dari storage jika ada (Opsional tapi disarankan)
-            // Storage::disk('public')->delete('berita/' . $berita->gambar_berita);
-
             $berita->delete();
-
-            return redirect()->route('berita.index')
-                ->with('pesan', ['success', 'Berhasil hapus berita']);
-
-        } catch (\Exception $e) {
-            return redirect()->route('berita.index')
-                ->with('pesan', ['danger', 'Gagal hapus berita']);
+            return redirect(route('berita.index'))->with('pesan',['success','berita berhasil dihapus']);
+        }catch (\Exception $e){
+            return redirect(route('berita.index'))->with('pesan',['danger','berita gagal dihapus']);
         }
     }
 }

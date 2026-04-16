@@ -7,7 +7,7 @@
                 <h1 class="h3 mb-2 text-gray-800">List User</h1>
             </div>
             <div class="col-lg-6 text-right">
-                <a href="{{route('user.tambah')}}" class="btn btn-sm btn-primary">
+                <a href="{{route('user.formTambah')}}" class="btn btn-sm btn-primary">
                     <i class="fa fa-plus"></i> Tambah
                 </a>
             </div>
@@ -39,7 +39,7 @@
                                 <td>{{$row->name}}</td>
                                 <td>{{$row->email}}</td>
                                 <td>
-                                    <a href="{{route('user.ubah',$row->id)}}" class="btn btn-sm btn-secondary"><i class="fa fa-edit"></i> Ubah</a>
+                                    <a href="{{route('user.formUbah',$row->id)}}" class="btn btn-sm btn-secondary"><i class="fa fa-edit"></i> Ubah</a>
                                     <a href="{{route('user.hapus', $row->id)}}"onclick="return confirm('Anda yakin?')"class="btn btn-sm btn-danger">
                                         <i class="fa fa-trash"></i> Hapus
                                     </a>
