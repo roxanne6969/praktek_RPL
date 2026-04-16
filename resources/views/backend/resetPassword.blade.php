@@ -1,0 +1,45 @@
+@extends('backend.layout.main')
+@section('content')
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Reset Password</h1>
+
+    @if(session()->has('pesan'))
+        <div class="alert alert-{{session()->get('pesan')[0]}}">
+            {{ session()->get('pesan')[1]}}
+        </div>
+    @endif
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form action="{{ route('dashboard.prosesResetPassword') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label">Password Lama</label>
+                    <input type="password" name="old_password" value="{{old('old_password')}}" class="form-control @error('old_password') is-invalid @enderror" placeholder="Masukkan password saat ini">
+                    @error('old_password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password Baru</label>
+                    <input type="password" name="new_password" value="{{old('new_password')}}" class="form-control @error('new_password') is-invalid @enderror" placeholder="Masukkan password baru">
+                    @error('new_password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Konfirmasi Password Baru</label>
+                    <input type="password" name="c_new_password" value="{{old('new_password')}}" class="form-control @error('c_new_password') is-invalid @enderror" placeholder="Ulangi password baru">
+                    @error('c_new_password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-primary">Reset</button>
+                <a href="{{route('dashboard.index') }}" class="btn btn-secondary">Kembali</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@endsection
