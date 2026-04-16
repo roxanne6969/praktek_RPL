@@ -12,7 +12,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form action="{{ route('dashboard.prosesResetPassword') }}" method="POST">
+            <form action="{{route('dashboard.processResetPassword')}}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label class="form-label">Password Lama</label>

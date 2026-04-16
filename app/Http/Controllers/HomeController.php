@@ -2,37 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Berita;   
-use App\Models\Kategori; 
-use App\Models\Menu;     
+use App\Models\Menu;
+use App\Models\Berita;
+use App\Models\Page;
+use Illuminate\Http\Request;  
 
 class HomeController extends Controller
 {
-    public function index()
+private function getMenu()
     {
-        // Mengambil berita terbaru (beserta kategorinya) sebanyak 6 buah
-        $berita = Berita::with('kategori')->latest()->take(6)->get();
-
-        // Mengambil berita paling populer (Most Views)
-        $mostViews = Berita::with('kategori')->orderBy('total_views', 'desc')->take(3)->get();
-
-        // Mengambil semua kategori untuk sidebar
-        $kategori = Kategori::all();
-
-        // Kirim semua variabel ke view home
-        return view('frontend.content.home', compact('berita', 'mostViews', 'kategori'));
+        // Fungsi pembantu buat nampilin menu dinamis di navbar
+        return Menu::with('submenu')
+                    ->whereNull('parent_menu')
+                    ->where('status_menu', 1)
+                    ->orderBy('urutan_menu', 'asc')
+                    ->get();
     }
 
-    // Fungsi lainnya biarkan saja dulu atau sesuaikan parameternya
+    public function index()
+    {
+        $menu = $this->getMenu();
+        $berita = Berita::with('kategori')->latest()->take(6)->get(); // 6 berita terbaru
+        $most_views = Berita::with('kategori')->orderBy('total_views', 'desc')->take(3)->get(); // Terpopuler
+
+        return view('frontend.content.home', compact('menu', 'berita', 'most_views'));
+    }
+
     public function detailBerita($id)
     {
-        $berita = Berita::with('kategori')->findOrFail($id);
+        $menu = $this->getMenu();
+        $berita = Berita::findOrFail($id);
         
-        // Update total views setiap berita dibuka
-        $berita->total_views += 1;
-        $berita->save();
+        // Update jumlah views tiap kali dibuka
+        $berita->increment('total_views'); 
 
-        return view('frontend.content.detailBerita', compact('berita'));
+        return view('frontend.content.detailBerita', compact('menu', 'berita'));
+    }
+
+    public function detailPage($id)
+    {
+        $menu = $this->getMenu();
+        $page = Page::findOrFail($id);
+        return view('frontend.content.detailPage', compact('menu', 'page'));
+    }
+
+    public function semuaBerita()
+    {
+        $menu = $this->getMenu();
+        $berita = Berita::with('kategori')->latest()->paginate(9); // Pakai pagination
+        return view('frontend.content.semuaBerita', compact('menu', 'berita'));
     }
 }

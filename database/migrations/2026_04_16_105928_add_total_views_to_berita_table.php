@@ -12,16 +12,18 @@ return new class extends Migration
     public function up(): void
 {
     Schema::table('berita', function (Blueprint $table) {
-        // Menambahkan kolom total_views dengan nilai default 0
-        $table->integer('total_views')->default(0);
+        // Tambah kolom buat hitung berapa kali berita dibaca
+        $table->integer('total_views')->default(0)->after('isi_berita'); 
     });
 }
 
-public function down(): void
-{
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
     Schema::table('berita', function (Blueprint $table) {
-        // Menghapus kolom jika migration di-rollback
         $table->dropColumn('total_views');
     });
-}
+    }
 };

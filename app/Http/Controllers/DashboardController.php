@@ -12,20 +12,28 @@ use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
-    public function index(){
-        return view('backend.layout.main'); //load file yg dibuat tadi
-    }
 
     public function dashboard()
     {
-        return view('backend.content.dashboard');  // arahkan ke views
+        $totalBerita = Berita::count();
+        $totalKategori = Kategori::count();
+        $totalUser = User::count();
 
+        $latestBerita = Berita::with('kategori')->latest()->take(5)->get();
 
+        return view('backend.content.dashboard', compact(
+            'totalBerita', 
+            'totalKategori', 
+            'totalUser', 
+            'latestBerita'
+        ));
     }
 
     public function profile()
     {
-        return view('backend.content.profile');
+        $id = Auth::guard('user')->user()->id;
+        $user = User::findOrFail($id);
+        return view('backend.content.profile',compact('user'));
 
     }
 
