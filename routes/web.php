@@ -23,7 +23,7 @@ Route::get('/page/{id}', [HomeController::class, 'detailPage'])->name('home.deta
 Route::get('/semua-berita', [HomeController::class, 'semuaBerita'])->name('home.semuaBerita');
 
 Route::middleware('guest:user')->group(function () {
-    Route::get('/login', [AuthController::class, 'index'])->name('auth.index');
+    Route::get('/login', [AuthController::class, 'index'])->name('auth.login');
     Route::post('/login', [AuthController::class, 'verify'])->name('auth.verify');
 });
 
@@ -42,7 +42,8 @@ Route::middleware('auth:user')->group(function () {
         Route::get('/kategori/ubah/{id}', [KategoriController::class, 'ubah'])->name('kategori.ubah');
         Route::post('/kategori/prosesUbah', [KategoriController::class, 'prosesUbah'])->name('kategori.prosesUbah');
         Route::get('/kategori/hapus/{id}', [KategoriController::class, 'hapus'])->name('kategori.hapus');
-        Route::get('/kategori/export-pdf', [KategoriController::class, 'exportPdf'])->name('kategori.export');
+        Route::get('/kategori/export-pdf', [KategoriController::class, 'exportPdf'])->name('kategori.exportPdf');
+        Route::get('/kategori/export-excel', [KategoriController::class, 'export'])->name('kategori.export');
 
         Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
         Route::get('/berita/tambah', [BeritaController::class, 'tambah'])->name('berita.tambah');

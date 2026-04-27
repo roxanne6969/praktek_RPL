@@ -66,7 +66,7 @@
                             @endforeach
                         @endisset
 
-                        <li class="nav-item"><a class="nav-link" href="{{ route('auth.index') }}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('auth.login') }}">Login</a></li>
                     </ul>
                 </div>
             </div>

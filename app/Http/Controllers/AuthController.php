@@ -19,7 +19,7 @@ class AuthController extends Controller
         if(Auth::guard('user')->attempt(['email'=>$request->email,'password'=>$request->password])){
             return redirect()->intended('/admin');
         }else{
-            return redirect(route('auth.index'))->with('pesan','Email atau Password Salah');
+            return redirect(route('auth.login'))->with('pesan','Email atau Password Salah');
         }
     }
     public function logout()
@@ -27,6 +27,6 @@ class AuthController extends Controller
         if(Auth::guard('user')->check()){
             Auth::guard('user')->logout();
         }
-        return redirect(route('auth.index'));
+        return redirect(route('auth.login'));
     }
 }

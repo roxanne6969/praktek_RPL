@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Export\KategoriExport;
+use Maatwebsite\Excel\Facades\Excel;
 class KategoriController extends Controller
 {
     public function index(){
@@ -67,5 +69,8 @@ class KategoriController extends Controller
         $kategori = Kategori::all();
         $pdf = PDF::loadView('backend.content.kategori.export', compact('kategori'));
         return $pdf->download('kategori.pdf');
+    }
+    public function export(){
+        return Excel::download(new KategoriExport, 'data-kategori.xlsx');
     }
 }

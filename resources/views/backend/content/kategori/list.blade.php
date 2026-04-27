@@ -8,8 +8,11 @@
             </div>
 
             <div class="col-lg-6 text-right">
+                <a href="{{route('kategori.exportPdf')}}" class="btn btn-sm btn-danger">
+                    <i class="fa fa-file-pdf"></i> Export PDF
+                </a>
                 <a href="{{route('kategori.export')}}" class="btn btn-sm btn-success">
-                    <i class="fa fa-file-pdf"></i> Export
+                    <i class="fa fa-file-excel"></i> Export Excel
                 </a>
                 <a href="{{route('kategori.tambah')}}" class="btn btn-sm btn-primary">
                     <i class="fa fa-plus"></i> Tambah
